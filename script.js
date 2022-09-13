@@ -3,6 +3,7 @@ import { createRow, createColumn } from "./modules/elementCreators.js";
 const parentTable = document.getElementById('dynamic-table');
 const newRowBtn = document.getElementById('new-row');
 const newColumnBtn = document.getElementById('new-column');
+const tableCells = Array.from(document.querySelectorAll('td'));
 
 let columnCount = 1;
 
