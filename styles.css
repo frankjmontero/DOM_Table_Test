@@ -1,0 +1,17 @@
+html {
+  min-width: 590px;
+}
+
+table {
+  max-width: 800px;
+}
+table, button {
+  margin: 5px 5px 5px 10px;
+}
+
+th, td {
+  min-width: 100px;
+  height: 10px;
+  padding: 5px;
+  border: 1px solid grey;
+}
