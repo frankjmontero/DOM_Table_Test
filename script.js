@@ -1,19 +1,55 @@
-import { createRow, createColumn } from "./modules/elementCreators.js";
+import { buildTable} from './modules/tableManipulation.js'
+import { setEditableCellsEventListener, createTable } from './modules/elementCreators.js';
 
-const parentTable = document.getElementById('dynamic-table');
-const newRowBtn = document.getElementById('new-row');
-const newColumnBtn = document.getElementById('new-column');
-const tableCells = Array.from(document.querySelectorAll('td'));
-
-let columnCount = 1;
-
-function incrementColumnCount() {
-  return () => columnCount++;
+const mockTableObject = {
+  rows: [
+    {
+      id: 1, 
+      cells: [
+        {
+          text: 'Id'
+        },
+        {
+          text: 'Name'
+        },
+      ]
+    },
+    {
+      id: 2,
+      cells: [
+        {
+          text: '1'
+        },
+        {
+          text: 'Jeremy'
+        },
+      ]
+    },
+  ]
 }
 
-newRowBtn.addEventListener('click', () => {
-  createRow(parentTable, columnCount, incrementColumnCount());
-  newColumnBtn.removeAttribute('disabled')
-});
+const pageBody = document.querySelector('body');
+const newRowBtn = document.getElementById('new-row');
+const newColumnBtn = document.getElementById('new-column')
+// const storedTable = JSON.parse(localStorage.getItem('table'));
+const storedTable = (() => mockTableObject)();
 
-newColumnBtn.addEventListener('click', () => createColumn(parentTable, incrementColumnCount()))
+console.log(storedTable);
+
+window.onload = () => {
+  const mainTbl = createTable();
+  pageBody.append(mainTbl);
+
+  if (storedTable) {
+    buildTable(mainTbl, storedTable);
+    newColumnBtn.removeAttribute('disabled');
+  }
+
+  setEditableCellsEventListener();
+  newRowBtn.addEventListener('click', () => {
+    newColumnBtn.removeAttribute('disabled');
+  });
+  newColumnBtn.addEventListener('click', () => {
+    console.log('created column');
+  });
+}
