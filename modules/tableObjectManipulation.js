@@ -29,13 +29,6 @@ let mockTableObject = {
 }
 // let mockTableObject = undefined;
 
-// export const modifyTable = {
-//   addRow,
-//   addColumn,
-//   updateStorage,
-// };
-
-
 export function getTableObject() {
   // JSON.parse
   return mockTableObject;
@@ -72,4 +65,19 @@ export function addRow() {
   console.log(tableMap);
   
   return tableMap;
+}
+
+export function addColumn(columnHeader) {
+  const tableMap = getTableObject();
+
+  tableMap.rows[0].cells.push({text: columnHeader});
+
+  for (let i = 1; i < tableMap.rows.length; i++) {
+    tableMap.rows[i].cells.push({text: ''});
+  }
+
+  setTableObject(tableMap);
+
+  return tableMap;
+
 }

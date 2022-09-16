@@ -1,5 +1,5 @@
 import { enableColumnBtn } from './tableElementManipulation.js';
-import { addRow } from './tableObjectManipulation.js'
+import { addRow, addColumn } from './tableObjectManipulation.js'
 
 function setGlobalEventListener(type, selector, func) {
   document.addEventListener(type, e => {
@@ -31,6 +31,7 @@ export function setBtnsEventListeners() {
   };
 
   const onNewColumnBtnClick = (e) => {
+    addColumn('test');
     console.log('created column');
   };
 
