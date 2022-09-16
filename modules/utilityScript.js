@@ -1,32 +1,5 @@
-import { addRow, buildTable, resetTable } from './tableManipulation.js';
-
-let mockTableObject = {
-  rows: [
-    {
-      id: 1, 
-      cells: [
-        {
-          text: 'Id'
-        },
-        {
-          text: 'Name'
-        },
-      ]
-    },
-    {
-      id: 2,
-      cells: [
-        {
-          text: '1'
-        },
-        {
-          text: 'Jeremy'
-        },
-      ]
-    },
-  ]
-}
-
+import { enableColumnBtn } from './tableElementManipulation.js';
+import { addRow } from './tableObjectManipulation.js'
 
 function setGlobalEventListener(type, selector, func) {
   document.addEventListener(type, e => {
@@ -54,9 +27,7 @@ export function setEditableCellsEventListener() {
 export function setBtnsEventListeners() {
   const onNewRowBtnClick = (e) => {
     enableColumnBtn();
-    mockTableObject = addRow(mockTableObject);
-    resetTable();
-    buildTable(getTable(), mockTableObject);
+    addRow();
   };
 
   const onNewColumnBtnClick = (e) => {
@@ -67,13 +38,6 @@ export function setBtnsEventListeners() {
   setGlobalEventListener('click', '#new-column', onNewColumnBtnClick);
 }
 
-export function enableColumnBtn() {
-  const newColumnBtn = document.getElementById('new-column');
-
-  if (newColumnBtn.hasAttribute('disabled'))
-  newColumnBtn.removeAttribute('disabled');
-}
-
-export function getTable() {
+export function getElementTable() {
   return document.getElementById('dynamic-table');
 }

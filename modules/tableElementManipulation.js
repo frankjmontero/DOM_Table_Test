@@ -1,13 +1,14 @@
-import { createTable, createRow, createHeaderCell, createNormalCell, createCheckbox, createActionButton } from './elementCreators.js';
+import { createRow, createHeaderCell, createNormalCell, createCheckbox, createActionButton } from './elementCreators.js';
+import { getElementTable } from './utilityScript.js';
 
 
-// export function generateTable() {
-  
-//   const table = createTable();
-//   if (!storedTable) return table;
-
-//   return buildTable(table, storedTable);
-// }
+export function resetTable() {
+  if (getElementTable()) {
+    while (getElementTable().firstChild) {
+      getElementTable().removeChild(getElementTable().firstChild)
+    }
+  }
+}
 
 export function buildTable(table, tableMap) {
   const rowsMap = tableMap.rows;
@@ -16,13 +17,10 @@ export function buildTable(table, tableMap) {
     table.append(buildRow(row));
   });
 
-  // const row = buildRows('1'); 
-  // table.append(row);
-
   return table;
 }
 
-function buildRow(rowMap) {
+export function buildRow(rowMap) {
   const newRow = createRow(rowMap.id);
   const cells = rowMap.cells;
   const middleCellsCallback = (rowMap.id == 1) ? createHeaderCell : createNormalCell;
@@ -34,16 +32,46 @@ function buildRow(rowMap) {
   newRow.append(newCell);
 
   for (let i = 0; i < cells.length; i++) {
-    newCell = middleCellsCallback();
+    newCell = middleCellsCallback(`${rowMap.id}${i + 2}`);
     newCell.textContent = cells[i].text;
     newRow.append(newCell);
   }
 
-  newCell = createNormalCell();
+  newCell = createNormalCell(cells.length + 1);
   newCell.append(newActionBtn);
   newRow.append(newCell);
 
   return newRow;
+}
+
+export function addRow(tableObject) {
+  const tableMap = {...tableObject};
+
+  if (!tableMap) {
+    tableMap.rows = [];
+    return tableMap;
+  }
+
+  const rows = tableMap.rows;
+  const rowMap = {
+    id: rows.length + 1,
+    cells: []
+  };
+  
+  for(let i = 0; i < tableMap.rows[0].cells.length; i++) {
+    rowMap.cells.push({ text: '' });
+  }
+
+  tableMap.rows.push(rowMap);
+  console.log(tableMap);
+  return tableMap;
+}
+
+export function enableColumnBtn() {
+  const newColumnBtn = document.getElementById('new-column');
+
+  if (newColumnBtn.hasAttribute('disabled'))
+  newColumnBtn.removeAttribute('disabled');
 }
 
 // function buildRows(id) {
