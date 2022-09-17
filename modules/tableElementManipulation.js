@@ -44,29 +44,6 @@ export function buildRow(rowMap) {
   return newRow;
 }
 
-export function addRow(tableObject) {
-  const tableMap = {...tableObject};
-
-  if (!tableMap) {
-    tableMap.rows = [];
-    return tableMap;
-  }
-
-  const rows = tableMap.rows;
-  const rowMap = {
-    id: rows.length + 1,
-    cells: []
-  };
-  
-  for(let i = 0; i < tableMap.rows[0].cells.length; i++) {
-    rowMap.cells.push({ text: '' });
-  }
-
-  tableMap.rows.push(rowMap);
-  console.log(tableMap);
-  return tableMap;
-}
-
 export function enableColumnBtn() {
   const newColumnBtn = document.getElementById('new-column');
 

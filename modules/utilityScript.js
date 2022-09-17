@@ -25,18 +25,32 @@ export function setEditableCellsEventListener() {
 }
 
 export function setBtnsEventListeners() {
+  const newRowModal = document.getElementById('new-column-modal');
+  const modalHeaderField = document.getElementById('header');
+  const modalTypeList = document.getElementById('type');
+
   const onNewRowBtnClick = (e) => {
     enableColumnBtn();
     addRow();
   };
 
   const onNewColumnBtnClick = (e) => {
-    addColumn('test');
-    console.log('created column');
+    newRowModal.style.display = 'block';
   };
+
+  const onModalSubmitClick = (e) => {
+    if (modalHeaderField.value.match(/^\s*$/)) {
+      alert('Enter a proper header value');
+      return;
+    }
+
+    addColumn(modalHeaderField.value, modalTypeList.value);
+    newRowModal.style.display = 'none';
+  }
 
   setGlobalEventListener('click', '#new-row', onNewRowBtnClick);
   setGlobalEventListener('click', '#new-column', onNewColumnBtnClick);
+  setGlobalEventListener('click', '#modal-submit-btn', onModalSubmitClick);
 }
 
 export function getElementTable() {

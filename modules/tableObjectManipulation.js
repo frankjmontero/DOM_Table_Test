@@ -7,10 +7,12 @@ let mockTableObject = {
       id: 1, 
       cells: [
         {
-          text: 'Id'
+          text: 'Id',
+          type: 'number'
         },
         {
-          text: 'Name'
+          text: 'Name',
+          type: 'text'
         },
       ]
     },
@@ -67,16 +69,17 @@ export function addRow() {
   return tableMap;
 }
 
-export function addColumn(columnHeader) {
+export function addColumn(columnHeader, columnType) {
   const tableMap = getTableObject();
 
-  tableMap.rows[0].cells.push({text: columnHeader});
+  tableMap.rows[0].cells.push({text: columnHeader, type: columnType});
 
   for (let i = 1; i < tableMap.rows.length; i++) {
     tableMap.rows[i].cells.push({text: ''});
   }
 
   setTableObject(tableMap);
+  console.log(mockTableObject);
 
   return tableMap;
 
