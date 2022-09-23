@@ -16,6 +16,18 @@ th, td {
   border: 1px solid grey;
 }
 
+td {
+  text-align: center;
+}
+
+.action-btn {
+  border: unset;
+  margin: unset;
+  padding: unset;
+  font-size: 100%;
+  font-weight: 900;
+}
+
 .modal {
   display: none;
   position: fixed;

@@ -1,6 +1,6 @@
-import { buildTable, enableColumnBtn } from './modules/tableElementManipulation.js'
+import { buildTable, toggleColumnBtn } from './modules/tableElementManipulation.js'
 import { createTable } from './modules/elementCreators.js';
-import { setEditableCellsEventListener, setBtnsEventListeners, getElementTable } from './modules/utilityScript.js';
+import { setCellsEventListeners, setBtnsEventListeners, getElementTable } from './modules/utilityScript.js';
 import { getTableObject } from './modules/tableObjectManipulation.js';
 
 // const mockTableObject = {
@@ -46,13 +46,13 @@ window.onload = () => {
 
   if (getTableObject()) {
     buildTable(getElementTable(), getTableObject());
-    enableColumnBtn();
+    toggleColumnBtn();
   }
 
   setAllEventListeners();
 }
 
 function setAllEventListeners() {
-  setEditableCellsEventListener();
+  setCellsEventListeners();
   setBtnsEventListeners();
 }

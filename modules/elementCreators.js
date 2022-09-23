@@ -5,6 +5,7 @@ const elements = {
   cell: () => document.createElement('td'),
   input: () => document.createElement('input'),
   button: () => document.createElement('button'),
+  link: () => document.createElement('a'),
 }
 
 
@@ -24,17 +25,45 @@ export function createRow(id) {
    return newRow;
 }
 
-export function createHeaderCell(id) {
+export function createHeaderCell(id, text) {
   const newCell = elements.header();
 
   newCell.setAttribute('id', id);
+  newCell.textContent = text;
 
   return newCell;
 }
 
-export function createNormalCell(id) {
+export function createNormalCell(id, dataType, text) {
   const newCell = elements.cell();
+  const type = (dataType) ? dataType : '';
 
+  newCell.setAttribute('id', id);
+  newCell.setAttribute('type', type);
+  newCell.style.textAlign = 'left';
+
+
+  switch (type) {
+    case 'number' :
+      newCell.style.textAlign = 'right';
+      newCell.textContent = text;
+      break;
+    case 'text' :
+      newCell.textContent = text;
+      break;
+    case 'email' :
+    case 'url':
+      newCell.append(createLink(text, type));
+      newCell.setAttribute('class', 'link');
+      break;
+  }
+
+  return newCell;
+}
+
+export function createEdgeCell(id) {
+  const newCell = elements.cell();
+  
   newCell.setAttribute('id', id);
 
   return newCell;
@@ -44,7 +73,6 @@ export function createCheckbox() {
   const newCheckbox = elements.input();
 
   newCheckbox.setAttribute('type', 'checkbox');
-  // newCheckbox.setAttribute('id', id);
 
   return newCheckbox;
 }
@@ -52,55 +80,25 @@ export function createCheckbox() {
 export function createActionButton() {
   const newActionBtn = elements.button();
 
+  newActionBtn.setAttribute('class', 'action-btn');
+  
+  newActionBtn.textContent = '\u2699';
+
   return newActionBtn;
 }
 
+export function createLink(text, type) {
+  const newLink = elements.link();
 
-
-// export function createRow(table, numberOfColumns, incrementColumnCount) {
-//   const childrenCount = table.children.length;
-//   const cellElement = (childrenCount > 0) ? createCell() : elements.header();
-//   const firsCell = (childrenCount > 0) ? createCell() : elements.header();
-//   const newRow = elements.row();
-//   const checkBox = elements.input();
-
-//   checkBox.setAttribute('type', 'checkbox');
-//   firsCell.append(checkBox);
-
-//   newRow.append(firsCell);
-
-//   incrementColumnCount();
-//   numberOfColumns++;
+  newLink.innerText = text;
   
-//   for (let i = 1; i < numberOfColumns; i++) {
-//     newRow.append(cellElement);
-//   }
+  newLink.setAttribute('target', '_blank');
+  newLink.setAttribute('href', text);
+  newLink.setAttribute('type', type)
 
-//   table.append(newRow);
-// }
+  if (type === 'email') {
+    newLink.setAttribute('href', `mailto:${text}`);
+  }
 
-// export function createColumn(table, incrementColumnCount) {
-//   const childrenCount = table.children.length;
-//   const firsCell = elements.header();
-//   const cellElement = createCell();
-  
-//   incrementColumnCount();
-//   table.children[0].append(firsCell);
-//   for (let i = 1; i < childrenCount; i++) {
-//     table.children[i].append(cellElement);
-//   }
-// }
-
-// function createCell() {
-//   const cell = elements.cell();
-  
-//   cell.addEventListener('click', (e) => {
-//     if (e.detail === 2) cell.contentEditable = 'true';
-//   });
-//   cell.addEventListener('keydown', (e) => {
-//     if (e.key === 'Enter') cell.contentEditable = 'false';
-//   });
-
-//   return cell;
-
-// }
+  return newLink;
+}

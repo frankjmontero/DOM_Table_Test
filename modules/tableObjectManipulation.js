@@ -14,6 +14,14 @@ let mockTableObject = {
           text: 'Name',
           type: 'text'
         },
+        {
+          text: 'Email',
+          type: 'email'
+        },
+        {
+          text: 'Website',
+          type: 'url'
+        },
       ]
     },
     {
@@ -24,6 +32,12 @@ let mockTableObject = {
         },
         {
           text: 'Jeremy'
+        },
+        {
+          text: 'frank@frank.com'
+        },
+        {
+          text: 'http://google.com'
         },
       ]
     },
@@ -40,7 +54,7 @@ function setTableObject(newTableObject) {
   // Stringify
   mockTableObject = newTableObject;
   resetTable();
-  buildTable(getElementTable(), mockTableObject);
+  buildTable(getElementTable(), getTableObject());
 }
 
 export function addRow() {
@@ -64,8 +78,7 @@ export function addRow() {
   tableMap.rows.push(rowMap);
   
   setTableObject(tableMap);
-  console.log(tableMap);
-  
+
   return tableMap;
 }
 
@@ -79,8 +92,16 @@ export function addColumn(columnHeader, columnType) {
   }
 
   setTableObject(tableMap);
-  console.log(mockTableObject);
 
   return tableMap;
 
+}
+
+export function updateCell(id, newContent) {
+  const tableObject = getTableObject();
+  const rowNumber = id[0] - 1;
+  const columnNumber = id[1] - 2;
+
+  tableObject.rows[rowNumber].cells[columnNumber].text = newContent;
+  setTableObject(tableObject);
 }
