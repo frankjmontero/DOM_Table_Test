@@ -1,58 +1,13 @@
-import { buildTable, resetTable } from "./tableElementManipulation.js";
-import { getElementTable } from "./utilityScript.js";
-
-let mockTableObject = {
-  rows: [
-    {
-      id: 1, 
-      cells: [
-        {
-          text: 'Id',
-          type: 'number'
-        },
-        {
-          text: 'Name',
-          type: 'text'
-        },
-        {
-          text: 'Email',
-          type: 'email'
-        },
-        {
-          text: 'Website',
-          type: 'url'
-        },
-      ]
-    },
-    {
-      id: 2,
-      cells: [
-        {
-          text: '1'
-        },
-        {
-          text: 'Jeremy'
-        },
-        {
-          text: 'frank@frank.com'
-        },
-        {
-          text: 'http://google.com'
-        },
-      ]
-    },
-  ]
-}
-// let mockTableObject = undefined;
+import { buildTable, resetTable, getElementTable } from "./tableElementManipulation.js";
 
 export function getTableObject() {
-  // JSON.parse
-  return mockTableObject;
+  return JSON.parse(localStorage.getItem('table'));
 }
 
-function setTableObject(newTableObject) {
-  // Stringify
-  mockTableObject = newTableObject;
+export function setTableObject(newTableObject) {
+  localStorage.setItem('table', JSON.stringify(newTableObject));
+  // console.log(getTableObject());
+
   resetTable();
   buildTable(getElementTable(), getTableObject());
 }
@@ -66,7 +21,7 @@ export function addRow() {
 
   const rows = tableMap.rows;
   const rowMap = {
-    id: rows.length + 1,
+    id: rows.length,
     cells: []
   };
   
@@ -99,9 +54,8 @@ export function addColumn(columnHeader, columnType) {
 
 export function updateCell(id, newContent) {
   const tableObject = getTableObject();
-  const rowNumber = id[0] - 1;
-  const columnNumber = id[1] - 2;
-
+  const rowNumber = id[0];
+  const columnNumber = id[1] - 1;
   tableObject.rows[rowNumber].cells[columnNumber].text = newContent;
   setTableObject(tableObject);
 }

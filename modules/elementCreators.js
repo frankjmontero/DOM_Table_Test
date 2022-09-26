@@ -53,7 +53,7 @@ export function createNormalCell(id, dataType, text) {
       break;
     case 'email' :
     case 'url':
-      newCell.append(createLink(text, type));
+      newCell.append(createLink(text, type, id));
       newCell.setAttribute('class', 'link');
       break;
   }
@@ -69,33 +69,39 @@ export function createEdgeCell(id) {
   return newCell;
 }
 
-export function createCheckbox() {
+export function createCheckbox(id) {
   const newCheckbox = elements.input();
 
+  newCheckbox.setAttribute('id', id);
   newCheckbox.setAttribute('type', 'checkbox');
 
   return newCheckbox;
 }
 
 export function createActionButton() {
-  const newActionBtn = elements.button();
+  const newActionBtn = elements.input();
 
-  newActionBtn.setAttribute('class', 'action-btn');
+  // newActionBtn.setAttribute('class', 'action-btn');
   
-  newActionBtn.textContent = '\u2699';
+  // newActionBtn.textContent = '\u2699';
+
+  newActionBtn.setAttribute('type', 'image');
+  newActionBtn.setAttribute('src', './sources/settings.png');
+  newActionBtn.style.height = '130%';
 
   return newActionBtn;
 }
 
-export function createLink(text, type) {
+export function createLink(text, type, id) {
   const newLink = elements.link();
 
   newLink.innerText = text;
   
+  newLink.setAttribute('id', id);
   newLink.setAttribute('target', '_blank');
   newLink.setAttribute('href', text);
-  newLink.setAttribute('type', type)
-
+  newLink.setAttribute('type', type);
+  
   if (type === 'email') {
     newLink.setAttribute('href', `mailto:${text}`);
   }
