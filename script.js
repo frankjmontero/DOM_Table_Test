@@ -1,48 +1,13 @@
-import { buildTable, toggleColumnBtn } from './modules/tableElementManipulation.js'
-import { createTable } from './modules/elementCreators.js';
-import { setCellsEventListeners, setBtnsEventListeners, getElementTable } from './modules/utilityScript.js';
+import { buildTable, toggleColumnBtn, getElementTable } from './modules/tableElementManipulation.js'
+import { setAllEventListeners } from './modules/eventsRepository.js';
 import { getTableObject } from './modules/tableObjectManipulation.js';
-
-// const mockTableObject = {
-//   rows: [
-//     {
-//       id: 1, 
-//       cells: [
-//         {
-//           text: 'Id'
-//         },
-//         {
-//           text: 'Name'
-//         },
-//       ]
-//     },
-//     {
-//       id: 2,
-//       cells: [
-//         {
-//           text: '1'
-//         },
-//         {
-//           text: 'Jeremy'
-//         },
-//       ]
-//     },
-//   ]
-// }
-// const mockTableObject = null;
-
-
-const pageBody = document.querySelector('body');
-const newRowBtn = document.getElementById('new-row');
-const newColumnBtn = document.getElementById('new-column')
-// const storedTable = JSON.parse(localStorage.getItem('table'));
-// const storedTable = (() => mockTableObject)();
-
-// console.log(storedTable);
+import { createTable } from './modules/elementCreators.js'
+import { getSortOrder } from './modules/utilityScript.js';
 
 window.onload = () => {
-  // const mainTbl = createTable();
-  // pageBody.append(mainTbl);
+  document.querySelector('body').append(createTable());
+  
+  getSortOrder();
 
   if (getTableObject()) {
     buildTable(getElementTable(), getTableObject());
@@ -52,7 +17,3 @@ window.onload = () => {
   setAllEventListeners();
 }
 
-function setAllEventListeners() {
-  setCellsEventListeners();
-  setBtnsEventListeners();
-}

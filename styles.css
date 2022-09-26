@@ -10,7 +10,7 @@ table, button {
 }
 
 th, td {
-  min-width: 100px;
+  min-width: 70px;
   height: 10px;
   padding: 5px;
   border: 1px solid grey;
@@ -18,6 +18,12 @@ th, td {
 
 td {
   text-align: center;
+}
+
+a {
+  display: inline-block;
+  width: 100%;
+  height: 100%;
 }
 
 .action-btn {
@@ -50,4 +56,8 @@ td {
 
 .new-column-form * {
   display: block;
+}
+
+.modal-btn {
+  display: inline-block;
 }

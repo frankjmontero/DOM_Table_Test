@@ -13,12 +13,10 @@
   <body>
     <button id="new-row" class="new-row-btn" >New Row</button>
     <button id="new-column" class="new-column-btn" disabled>New Column</button>
-    <table id="dynamic-table"></table>
-  </body>
-
-  <div id="new-column-modal" class="modal">
-    <div class="new-column-form">
-      <!--<form onsubmit="newColumn()"> -->
+    <label for="search">Search: </label>
+    <input id="search" type="text">
+    <div id="new-column-modal" class="modal">
+      <div class="new-column-form">
         <label for="header">Header</label>
         <input type="text" name="header" id="header" placeholder="Header" autofocus/>
         <label for="type">Type</label>
@@ -28,9 +26,11 @@
           <option value="email">Email</option>
           <option value="url">Link</option>
         </select>
-        <!--<input id="modal-submit-btn" type="submit" value="Submit" /> -->
-        <button id="modal-submit-btn">Submit</button>
-      <!--</form>-->
+        <button id="modal-submit-btn" class="modal-btn">Submit</button>
+        <button id="modal-close-btn" class="modal-btn">Close</button>
+      </div>
     </div>
-  </div>
+  </body>
+
+  
 </html>
