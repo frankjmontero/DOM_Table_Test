@@ -43,28 +43,29 @@ export function tableSearch(searchString, tableMap) {
 }
 
 export function buildRow(rowMap, index, headerCells) {
-  const newRow = createRow(index);
+  const newRow = createRow(rowMap.id);
   const cells = rowMap.cells;
+  // console.log(rowMap.id);
   const newCheckbox = createCheckbox(rowMap.id);
   const newActionBtn = createActionButton();
-  let newCell = createEdgeCell(`${index}0`);
+  let newCell = createEdgeCell(rowMap.id);
 
   newCell.append(newCheckbox);
   newRow.append(newCell);
 
   if (index == 0) {
     for (let i = 0; i < cells.length; i++) {
-      newCell = createHeaderCell(`${index}${i + 1}`, cells[i].text);
+      newCell = createHeaderCell(i, cells[i].text);
       newRow.append(newCell);
     }
   } else {
     for (let i = 0; i < cells.length; i++) {
-      newCell = createNormalCell(`${index}${i + 1}`, headerCells[i].type, cells[i].text);
+      newCell = createNormalCell(i, headerCells[i].type, cells[i].text);
       newRow.append(newCell);
     }
   }
 
-  newCell = createEdgeCell(`${index}${cells.length + 1}`);
+  newCell = createEdgeCell(rowMap.id);
   newCell.append(newActionBtn);
   newCell.style.padding = '0';
   newRow.append(newCell);
@@ -75,10 +76,20 @@ export function buildRow(rowMap, index, headerCells) {
 export function toggleColumnBtn() {
   const newColumnBtn = document.getElementById('new-column');
 
-  if (newColumnBtn.hasAttribute('disabled'))
-  newColumnBtn.removeAttribute('disabled');
+  newColumnBtn.disabled = (newColumnBtn.disabled) ? !newColumnBtn.disabled : newColumnBtn.disabled;
 }
 
 export function getElementTable() {
   return document.getElementById('dynamic-table');
+}
+
+export function toggleDeleteBtn(isBoxChecked) {
+  const deleteBtn = document.getElementById('delete-btn');
+  
+  if (isBoxChecked) {
+    deleteBtn.disabled = !isBoxChecked;
+    return;
+  }
+
+  deleteBtn.disabled = !isBoxChecked;
 }

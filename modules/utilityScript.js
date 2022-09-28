@@ -13,3 +13,7 @@ export function setSortOrder(value) {
 export function toggleSortOrder() {
   localStorage.setItem('ascending', (getSortOrder() === 'true') ? 'false' : 'true');
 }
+
+export function generateRandom(max) {
+  return Math.floor(Math.random() * max);
+}

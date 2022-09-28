@@ -28,7 +28,7 @@ export function createRow(id) {
 export function createHeaderCell(id, text) {
   const newCell = elements.header();
 
-  newCell.setAttribute('id', id);
+  newCell.setAttribute('id', `h${id}`);
   newCell.textContent = text;
 
   return newCell;
@@ -38,7 +38,7 @@ export function createNormalCell(id, dataType, text) {
   const newCell = elements.cell();
   const type = (dataType) ? dataType : '';
 
-  newCell.setAttribute('id', id);
+  newCell.setAttribute('class', `c${id}`);
   newCell.setAttribute('type', type);
   newCell.style.textAlign = 'left';
 
@@ -53,8 +53,8 @@ export function createNormalCell(id, dataType, text) {
       break;
     case 'email' :
     case 'url':
-      newCell.append(createLink(text, type, id));
-      newCell.setAttribute('class', 'link');
+      newCell.append(createLink(text, type));
+      newCell.classList.add('class', 'link');
       break;
   }
 
@@ -64,7 +64,7 @@ export function createNormalCell(id, dataType, text) {
 export function createEdgeCell(id) {
   const newCell = elements.cell();
   
-  newCell.setAttribute('id', id);
+  newCell.setAttribute('class', `e${id}`);
 
   return newCell;
 }
@@ -72,8 +72,14 @@ export function createEdgeCell(id) {
 export function createCheckbox(id) {
   const newCheckbox = elements.input();
 
-  newCheckbox.setAttribute('id', id);
+  newCheckbox.setAttribute('id', `b${id}`);
   newCheckbox.setAttribute('type', 'checkbox');
+  newCheckbox.setAttribute('name', (parseInt(id) === 0) 
+    ? 
+      'all-rows-checker' 
+    :
+      'row-checker' 
+    );
 
   return newCheckbox;
 }
@@ -92,12 +98,11 @@ export function createActionButton() {
   return newActionBtn;
 }
 
-export function createLink(text, type, id) {
+export function createLink(text, type) {
   const newLink = elements.link();
 
   newLink.innerText = text;
   
-  newLink.setAttribute('id', id);
   newLink.setAttribute('target', '_blank');
   newLink.setAttribute('href', text);
   newLink.setAttribute('type', type);
