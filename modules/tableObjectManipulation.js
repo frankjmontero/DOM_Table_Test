@@ -6,6 +6,7 @@ export function getTableObject() {
 }
 
 export function setTableObject(newTableObject) {
+  console.log(JSON.stringify(newTableObject));
   localStorage.setItem('table', JSON.stringify(newTableObject));
   // console.log(getTableObject());
 
@@ -14,11 +15,13 @@ export function setTableObject(newTableObject) {
 }
 
 export function addRow() {
-  const tableMap = (getTableObject()) ? getTableObject() : {};
-  
-  if (!tableMap.rows) {
-    tableMap.rows = [];
-  }
+  const tableMap = (getTableObject()) ? getTableObject() : {rows: []};
+  console.log(tableMap);
+  // if (!tableMap.rows) {
+  //   tableMap.rows = [];
+  // }
+
+  setTableObject(tableMap);
 
   const rows = tableMap.rows;
   const rowMap = {
@@ -58,19 +61,23 @@ export function updateCell(rowId, id, newContent) {
   const tableMap = getTableObject();
   const rowNumber = tableMap.rows.findIndex(row => row.id == rowId);
   const cellNumber = id[1];
+  
   tableMap.rows[rowNumber].cells[cellNumber].text = newContent;
-  setTableObject(tableMap);
+  
+  // setTableObject(tableMap);
+  localStorage.setItem('table', JSON.stringify(tableMap));
 }
 
 export function deleteRecord(recordNumber) {
   if(!recordNumber) return;
+
   const tableMap = getTableObject();
   const rowNumber = tableMap.rows.findIndex(row => row.id == recordNumber);
 
   tableMap.rows.splice(parseInt(rowNumber), 1);
   
   setTableObject(tableMap);
-  toggleDeleteBtn(false);
+  // toggleDeleteBtn(false);
 }
 
 const getRandomNumber = () => {
@@ -83,11 +90,45 @@ const getRandomNumber = () => {
     count++;
     if (count > idMaxLength) idMaxLength++;
     randomNumber = generateRandom(idMaxLength);
-    found = !!tableMap.rows.find(row => {
-      // console.log(row.id, randomNumber, row.id == `r${randomNumber}`);
-      return row.id == `r${randomNumber}`
-    });
+    if (tableMap) {
+      found = !!tableMap.rows.find(row => {
+        // console.log(row.id, randomNumber, row.id == `r${randomNumber}`);
+        return row.id == `r${randomNumber}`
+      });
+    }
   // console.log('found: ', found);
   }
   return randomNumber;
 };
+
+export function getRowJson(rowId) {
+  const tableMap = getTableObject();
+  const jsonReadyRow = [];
+  const dataCells = tableMap.rows.find(row => row.id == rowId).cells;
+  const headerCells = tableMap.rows[0].cells;
+
+  dataCells.forEach((cell, i) => {
+    jsonReadyRow.push({[headerCells[i].text] : cell.text});  
+  });
+
+  return JSON.stringify(jsonReadyRow);
+}
+
+export function getRowCsv(rowId) {
+  const tableMap = getTableObject();
+  let csvReadyRow = '';
+  const dataCells = tableMap.rows.find(row => row.id == rowId).cells;
+  const headerCells = tableMap.rows[0].cells;
+
+  headerCells.forEach((cell, i, arr) => {
+    csvReadyRow += `${cell.text}`;
+    if (i < arr.length - 1) csvReadyRow += ', ';
+  });
+  csvReadyRow += '\n';
+  dataCells.forEach((cell, i, arr) => {
+    csvReadyRow += `${cell.text}`;
+    if (i < arr.length - 1) csvReadyRow += ', ';
+  });
+
+  return csvReadyRow;
+}

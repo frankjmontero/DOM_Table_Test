@@ -1,4 +1,4 @@
-import { createRow, createHeaderCell, createNormalCell, createCheckbox, createActionButton, createEdgeCell } from './elementCreators.js';
+import { createRow, createHeaderCell, createNormalCell, createCheckbox, createActionButton, createEdgeCell, createActionMenu } from './elementCreators.js';
 
 
 export function resetTable() {
@@ -46,14 +46,15 @@ export function buildRow(rowMap, index, headerCells) {
   const newRow = createRow(rowMap.id);
   const cells = rowMap.cells;
   // console.log(rowMap.id);
-  const newCheckbox = createCheckbox(rowMap.id);
-  const newActionBtn = createActionButton();
+  const newCheckbox = createCheckbox(rowMap.id, index);
+  const newActionMenu = createActionMenu(rowMap.id);
   let newCell = createEdgeCell(rowMap.id);
 
   newCell.append(newCheckbox);
   newRow.append(newCell);
 
   if (index == 0) {
+    console.log(newRow);
     for (let i = 0; i < cells.length; i++) {
       newCell = createHeaderCell(i, cells[i].text);
       newRow.append(newCell);
@@ -66,7 +67,7 @@ export function buildRow(rowMap, index, headerCells) {
   }
 
   newCell = createEdgeCell(rowMap.id);
-  newCell.append(newActionBtn);
+  newCell.append(newActionMenu);
   newCell.style.padding = '0';
   newRow.append(newCell);
 

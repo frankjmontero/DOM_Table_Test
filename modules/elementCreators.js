@@ -6,6 +6,7 @@ const elements = {
   input: () => document.createElement('input'),
   button: () => document.createElement('button'),
   link: () => document.createElement('a'),
+  div: () => document.createElement('div'),
 }
 
 
@@ -54,7 +55,7 @@ export function createNormalCell(id, dataType, text) {
     case 'email' :
     case 'url':
       newCell.append(createLink(text, type));
-      newCell.classList.add('class', 'link');
+      newCell.classList.add('link');
       break;
   }
 
@@ -69,12 +70,12 @@ export function createEdgeCell(id) {
   return newCell;
 }
 
-export function createCheckbox(id) {
+export function createCheckbox(id, index) {
   const newCheckbox = elements.input();
 
   newCheckbox.setAttribute('id', `b${id}`);
   newCheckbox.setAttribute('type', 'checkbox');
-  newCheckbox.setAttribute('name', (parseInt(id) === 0) 
+  newCheckbox.setAttribute('name', (index === 0) 
     ? 
       'all-rows-checker' 
     :
@@ -84,28 +85,72 @@ export function createCheckbox(id) {
   return newCheckbox;
 }
 
-export function createActionButton() {
+export function createActionButton(rowId) {
   const newActionBtn = elements.input();
 
-  // newActionBtn.setAttribute('class', 'action-btn');
+  newActionBtn.setAttribute('class', 'action-btn');
+  newActionBtn.setAttribute('id', `btn${rowId}`);
   
   // newActionBtn.textContent = '\u2699';
 
   newActionBtn.setAttribute('type', 'image');
   newActionBtn.setAttribute('src', './sources/settings.png');
-  newActionBtn.style.height = '130%';
+  // newActionBtn.style.height = '130%';
 
   return newActionBtn;
 }
 
-export function createLink(text, type) {
+export function createActionMenu(rowId) {
+  const newDiv = elements.div();
+  const innerDiv = elements.div();
+  const newBtn = createActionButton(rowId);
+
+  innerDiv.setAttribute('id', `m${rowId}`);
+  innerDiv.setAttribute('class', 'menu-options');
+  innerDiv.append(createLink('Edit', 'url', '#'));
+  innerDiv.append(createLink('Copy (JSON)', 'url', '#'));
+  innerDiv.append(createLink('Copy (CSV)', 'url', '#'));
+  innerDiv.append(createLink('Delete', 'url', '#'));
+
+  newDiv.append(newBtn);
+  newDiv.setAttribute('class', 'row-menu');
+  newDiv.append(innerDiv);
+
+  return newDiv;
+}
+
+export function createLink(text, type, url) {
   const newLink = elements.link();
 
   newLink.innerText = text;
   
-  newLink.setAttribute('target', '_blank');
-  newLink.setAttribute('href', text);
-  newLink.setAttribute('type', type);
+  if(url) {
+    let classAttribute = '';
+    switch (text) {
+      case 'Edit':
+        classAttribute = 'edit';
+        break;
+      case 'Copy (JSON)':
+        classAttribute = 'copy-json';
+        break;
+      case 'Copy (CSV)':
+        classAttribute = 'copy-csv';
+        break;
+      case 'Delete':
+        classAttribute = 'delete';
+        break;
+    }
+    newLink.setAttribute('class', classAttribute);
+    newLink.setAttribute('href', url);
+
+  } else {
+    newLink.setAttribute('target', '_blank');
+    newLink.setAttribute('href', text);  
+    newLink.setAttribute('type', type);
+  }
+  // newLink.setAttribute('target', '_blank');
+  // newLink.setAttribute('href', (url) ? url: text);
+  // newLink.setAttribute('type', type);
   
   if (type === 'email') {
     newLink.setAttribute('href', `mailto:${text}`);
