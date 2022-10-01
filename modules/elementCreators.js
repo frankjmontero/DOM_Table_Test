@@ -1,3 +1,5 @@
+import { setDragAndDropEvents } from "./eventsRepository.js";
+
 const elements = {
   table: () => document.createElement('table'),
   row: () => document.createElement('tr'),
@@ -14,7 +16,7 @@ export function createTable() {
   const newTable = elements.table();
 
   newTable.setAttribute('id', 'dynamic-table');
-
+  
   return newTable;
 }
 
@@ -22,6 +24,9 @@ export function createRow(id) {
    const newRow = elements.row();
 
    newRow.setAttribute('id', id);
+   setDragAndDropEvents(newRow);
+  //  console.log(newRow);
+  //  console.log(newRow.getRootNode());
 
    return newRow;
 }
@@ -31,6 +36,7 @@ export function createHeaderCell(id, text) {
 
   newCell.setAttribute('id', `h${id}`);
   newCell.textContent = text;
+  setDragAndDropEvents(newCell);
 
   return newCell;
 }
@@ -119,6 +125,7 @@ export function createActionMenu(rowId) {
   return newDiv;
 }
 
+/* TODO make link span whole cell */
 export function createLink(text, type, url) {
   const newLink = elements.link();
 

@@ -2,7 +2,7 @@ import { buildTable, toggleColumnBtn, getElementTable } from './modules/tableEle
 import { setAllEventListeners } from './modules/eventsRepository.js';
 import { getTableObject } from './modules/tableObjectManipulation.js';
 import { createTable } from './modules/elementCreators.js'
-import { getSortOrder } from './modules/utilityScript.js';
+import { setSortOrder } from './modules/utilityScript.js';
 
 window.onload = () => {
   document.querySelector('body').append(createTable());
@@ -14,7 +14,8 @@ window.onload = () => {
 //   console.log(num);
 // }
   
-  getSortOrder();
+  // getSortOrder();
+  setSortOrder(true);
 
   if (getTableObject()) {
     buildTable(getElementTable(), getTableObject());
@@ -22,5 +23,6 @@ window.onload = () => {
   }
 
   setAllEventListeners();
+  console.log('page loaded');
 }
 

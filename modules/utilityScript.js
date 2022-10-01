@@ -1,17 +1,17 @@
 
 export function getSortOrder() {
-  if (localStorage.getItem('ascending')) return localStorage.getItem('ascending');
+  if (sessionStorage.getItem('ascending')) return sessionStorage.getItem('ascending');
 
-  setSortOrder('true');
-  return localStorage.getItem('ascending');
+  // setSortOrder('true');
+  return sessionStorage.getItem('ascending');
 }
 
 export function setSortOrder(value) {
-  localStorage.setItem('ascending', value);
+  sessionStorage.setItem('ascending', value);
 }
 
 export function toggleSortOrder() {
-  localStorage.setItem('ascending', (getSortOrder() === 'true') ? 'false' : 'true');
+  sessionStorage.setItem('ascending', (getSortOrder() === 'true') ? 'false' : 'true');
 }
 
 export function generateRandom(max) {

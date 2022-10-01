@@ -6,7 +6,7 @@ export function getTableObject() {
 }
 
 export function setTableObject(newTableObject) {
-  console.log(JSON.stringify(newTableObject));
+  // console.log(JSON.stringify(newTableObject));
   localStorage.setItem('table', JSON.stringify(newTableObject));
   // console.log(getTableObject());
 
@@ -16,7 +16,7 @@ export function setTableObject(newTableObject) {
 
 export function addRow() {
   const tableMap = (getTableObject()) ? getTableObject() : {rows: []};
-  console.log(tableMap);
+  // console.log(tableMap);
   // if (!tableMap.rows) {
   //   tableMap.rows = [];
   // }
@@ -60,8 +60,11 @@ export function addColumn(columnHeader, columnType) {
 export function updateCell(rowId, id, newContent) {
   const tableMap = getTableObject();
   const rowNumber = tableMap.rows.findIndex(row => row.id == rowId);
+  // const cellNumber = id;
   const cellNumber = id[1];
   
+  // console.log(cellNumber);
+
   tableMap.rows[rowNumber].cells[cellNumber].text = newContent;
   
   // setTableObject(tableMap);

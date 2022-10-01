@@ -54,7 +54,7 @@ export function buildRow(rowMap, index, headerCells) {
   newRow.append(newCell);
 
   if (index == 0) {
-    console.log(newRow);
+    // console.log(newRow);
     for (let i = 0; i < cells.length; i++) {
       newCell = createHeaderCell(i, cells[i].text);
       newRow.append(newCell);

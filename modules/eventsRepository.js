@@ -1,10 +1,10 @@
-import { tableSearch, toggleColumnBtn, toggleDeleteBtn } from './tableElementManipulation.js';
+import { getElementTable, tableSearch, toggleColumnBtn, toggleDeleteBtn } from './tableElementManipulation.js';
 import { addRow, addColumn, updateCell, getTableObject, setTableObject, deleteRecord, getRowJson, getRowCsv } from './tableObjectManipulation.js'
 import { getSortOrder, toggleSortOrder } from './utilityScript.js';
 
 function setGlobalEventListener(type, selector, func) {
   document.addEventListener(type, e => {
-    // console.log(e.target, selector, e.target.matches(selector), func);
+    // if (type === 'mousedown') console.log(e.target, selector, e.target.matches(selector), func);
     if (e.target.matches(selector)) func(e);
   });
 }
@@ -13,15 +13,14 @@ const makeElementEditable = element => {
   element.contentEditable = true;
 }
 
-const onDataCellDoubleClick = e => {
+const dataCellDoubleClickHandler = e => {
   // e.target.contentEditable = 'true';
   makeElementEditable(e.target);
 
   e.target.focus({focusVisible: true});
 };
 
-const onDataCellKeyPress = e => {
-  
+const dataCellKeyPressHandler = e => {
   if (e.key === 'Enter') {
     e.preventDefault()
     
@@ -29,14 +28,20 @@ const onDataCellKeyPress = e => {
     const cellType = e.target.getAttribute('type');
     let cellColor = 'black';
     // let elementId = e.target.className;
+    // let elementId = e.target.closest('[class]').cellIndex - 1;
     let elementId = e.target.closest('[class]').classList[0];
+    // const fatherId = e.target.parentNode.id;
     const fatherId = e.target.closest('tr').id;
 
+    // console.log(elementId, fatherId, fatherId2);
+    console.log(elementId, fatherId);
+
+    
     e.target.contentEditable = 'false';
 
     const errorHandler = (errorMsg) => {
       alert(errorMsg);
-      onDataCellDoubleClick(e);
+      dataCellDoubleClickHandler(e);
       e.target.style.borderColor = 'red';
     }
 
@@ -75,17 +80,18 @@ const onDataCellKeyPress = e => {
   }
 };
 
-const onAnchorClick = e => {
+const anchorClickHandler = e => {
   if (!e.ctrlKey) e.preventDefault();
 };
 
-const onHeaderClick = e => {
+const headerClickHandler = e => {
   const tableMap = getTableObject();
   const headerObject = tableMap.rows.shift();
   const cellNumber = parseInt(e.target.getAttribute('id')[1]);
   const headerType = headerObject.cells[cellNumber].type;
 
   // console.log(headerObject, headerType);
+  // console.log('canceled?', e.defaultPrevented);
   
   const sortNumbers = (a, b) => {
     let firstValue = parseInt(a.cells[cellNumber].text);
@@ -117,9 +123,11 @@ const onHeaderClick = e => {
 
   tableMap.rows.sort((headerType === 'number') ? sortNumbers : sortStrings);
   toggleSortOrder();
+  console.log('sorted and toggled');
 
   tableMap.rows.unshift(headerObject);
   setTableObject(tableMap);
+  // setDragAndDropEvents();
 };
 
 const dataCheckboxSelector = 'input[name="row-checker"]';
@@ -135,7 +143,7 @@ const queryCheckBoxes = () => {
   return areAllUnchecked;
 }
 
-const onFirstCheckboxClick = e => {
+const firstCheckboxClickHandler = e => {
   const allDataCheckboxes = document.querySelectorAll(dataCheckboxSelector);
   const isElementChecked = e.target.checked;
 
@@ -153,9 +161,9 @@ const onFirstCheckboxClick = e => {
   toggleDeleteBtn(isElementChecked);
 };
 
-const onDataRowsCheckboxClick = e => {
+const dataRowsCheckboxClickHandler = e => {
   const isElementChecked = e.target.checked;
-  const fatherId = e.target.parentElement.getAttribute('id');
+  // const fatherId = e.target.parentElement.getAttribute('id');
   const elementRow = e.target.closest('tr');
 
   // console.log(elementRow);
@@ -169,19 +177,155 @@ const onDataRowsCheckboxClick = e => {
   if (queryCheckBoxes()) toggleDeleteBtn(isElementChecked);
 };
 
+const dragRowMouseDownHandler = e => {
+  if (e.ctrlKey) e.target.closest('tr').draggable = 'true';
+};
+
+const dragColumnMouseDownHandler = e => {
+  if (e.ctrlKey) e.target.draggable = 'true';
+};
+// const keyOnRowsHandler = e => {
+//   if (e.ctrlKey) {
+//     const tableElementRows = document.querySelectorAll('tr');
+
+//     tableElementRows.forEach((row, i) => {
+//       if (i > 0) row.draggable = true;
+//     });
+    
+//   }
+// };
+
+// const keyUpOnRowsHandler = e => {
+//   if (e.ctrlKey) {
+//     const tableElementRows = document.querySelectorAll('tr');
+
+//     tableElementRows.forEach((row, i) => {
+//       if (i > 0) row.draggable = false;
+//     });
+    
+//   }
+// };
+
+const startingDragHandler = e => {
+  e.dataTransfer.setData('text/plain', e.target.id);
+  e.dataTransfer.effectAllowed = 'move';
+};
+
+// const enterDragHandler = e => {
+//   const draggingRowId = e.dataTransfer.getData('text/plain');
+//   const draggingRowCopy = document.getElementsById(draggingRowId).cloneNode(true);
+//   draggingRow.classList.add('temporary-dragged-row');
+//   e.target.insertAdjacentHTML('beforebegin', draggingRow);
+// }; 
+
+const overDragHandler = e => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+};
+
+const rowDropHandler = e => {
+  e.preventDefault();
+  const draggingRowId = e.dataTransfer.getData('text/plain');
+  const draggingRow = document.getElementById(draggingRowId);
+  const tableElement = getElementTable();
+  
+  console.log(draggingRowId, draggingRow);
+  
+  if(draggingRow.draggable) draggingRow.removeAttribute('draggable');
+  // e.target.closest('tr').insertAdjacentHTML('beforebegin', draggingRow.outerHTML);
+  // console.log(e.target.closest('tr'), tableElement);
+  tableElement.insertBefore(draggingRow, e.target.closest('tr'));
+};
+
+
+
+
+const columnDropHandler = e => {
+  e.preventDefault();
+  const draggingHeaderId = e.dataTransfer.getData('text/plain');
+  const draggingHeader = document.getElementById(draggingHeaderId);
+  // const columnNumber = parseInt(draggingHeaderId[1]) + 1;
+  // const targetColumn = parseInt(e.target.id[1]);
+  const columnNumber = draggingHeader.cellIndex;
+  const targetColumn = e.target.cellIndex;
+  // const targetRow = e.target.closest('tr');
+  const tableRows = document.querySelectorAll('tr');
+
+  // console.log(tableRows);
+  console.log(draggingHeader, columnNumber, targetColumn);
+  
+  draggingHeader.removeAttribute('draggable');
+  tableRows.forEach(row => {
+    const rowCells = row.children;
+    // console.log(rowCells, row);
+    console.log(rowCells[columnNumber], rowCells[targetColumn]);
+    row.insertBefore(rowCells[columnNumber], rowCells[targetColumn]);
+  });
+  
+  // targetRow.insertBefore(draggingHeader, e.target);
+}
+
+
+
+
+// const finishDraggingHandler = e => {
+//   // console.log(e.target);
+//   // e.target.removeAttribute('draggable');
+//   if (e.dataTransfer.dropEffect !== 'none')  {
+//     // e.target.remove();
+//     // setAllEventListeners();
+//     // setCellsEventListeners();
+//     // setDragAndDropEvents();
+//   }
+// };
+
+/* TODO Make headers editable */
 function setCellsEventListeners() {
   const anchorSelector = 'a';
   const headerSelector = 'th';
   const editableElementsSelector = `${headerSelector}, td:not(:first-child, :last-child, .link), ${anchorSelector}`;
   const headerCheckboxSelector = 'input[name="all-rows-checker"]';
-  // console.log(document.querySelectorAll(headerCheckboxSelector), document.querySelectorAll(dataCheckboxSelector));
+  // const tableElementRows = document.querySelectorAll('tr');
+  const dataCellSelector = 'tr:not(:nth-of-type(1)) td';
+  // const tableElementsDataRowsSelector = 'tr:not(:nth-of-type(1))';  
 
-  setGlobalEventListener('dblclick', editableElementsSelector, onDataCellDoubleClick);
-  setGlobalEventListener('keydown', editableElementsSelector, onDataCellKeyPress);
-  setGlobalEventListener('click', anchorSelector, onAnchorClick);
-  setGlobalEventListener('click', headerSelector, onHeaderClick);
-  setGlobalEventListener('click', headerCheckboxSelector, onFirstCheckboxClick);
-  setGlobalEventListener('click', dataCheckboxSelector, onDataRowsCheckboxClick);
+  setGlobalEventListener('dblclick', editableElementsSelector, dataCellDoubleClickHandler);
+  setGlobalEventListener('keydown', editableElementsSelector, dataCellKeyPressHandler);
+  setGlobalEventListener('click', anchorSelector, anchorClickHandler);
+  setGlobalEventListener('click', headerSelector, headerClickHandler);
+  setGlobalEventListener('click', headerCheckboxSelector, firstCheckboxClickHandler);
+  setGlobalEventListener('click', dataCheckboxSelector, dataRowsCheckboxClickHandler);
+  setGlobalEventListener('mousedown', dataCellSelector, dragRowMouseDownHandler);
+  setGlobalEventListener('mousedown', headerSelector, dragColumnMouseDownHandler);
+  // setDragAndDropEvents();
+
+}
+
+export function setDragAndDropEvents(element) {
+  // const tableElementRows = document.querySelectorAll('tr');
+
+  // tableElementRows.forEach((row, i) => {
+  //   if (i > 0) {
+  //     // row.addEventListener('mousedown', rowsMouseDownHandler);
+  //     row.addEventListener('dragstart', startingDragHandler);
+  //     // row.addEventListener('dragenter', enterDragHandler);
+  //     row.addEventListener('dragover', overDragHandler);
+  //     // row.addEventListener('dragleave', dragLeaveHandler);
+  //     row.addEventListener('drop', dropHandler);
+  //     row.addEventListener('dragend', finishDraggingHandler);
+  //   }
+  // });
+
+  element.addEventListener('dragstart', startingDragHandler);
+  // element.addEventListener('dragenter', enterDragHandler);
+  element.addEventListener('dragover', overDragHandler);
+  // element.addEventListener('dragleave', dragLeaveHandler);
+  // element.addEventListener('dragend', finishDraggingHandler);
+  if(element.nodeName.toLowerCase() === 'div') {
+    element.addEventListener('drop', rowDropHandler);
+    return;
+  }
+  element.addEventListener('drop', columnDropHandler);
 }
 
 const newRowModal = document.getElementById('new-column-modal');
@@ -316,9 +460,6 @@ function setRowMenuEventListeners() {
   setGlobalEventListener('click', copyJsonOptionSelector, onCopyMenuClick);
   setGlobalEventListener('click', copyCsvOptionSelector, onCopyMenuClick);
 }
-
-
-
 
 export function setAllEventListeners() {
   setCellsEventListeners();
