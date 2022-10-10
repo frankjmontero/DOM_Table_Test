@@ -67,7 +67,7 @@ const dataCellKeyPressHandler = (e) => {
         }
         break;
       case 'text':
-        if (elementText === '') {
+        if (elementText.match(/^\s*$/)) {
           errorHandler('No empty value allowed');
           return;
         }
@@ -75,7 +75,7 @@ const dataCellKeyPressHandler = (e) => {
       case 'email':
         if (
           !elementText.match(
-            /^(([^<>()[\]\.,;:\s@\"]+(\.[^<>()[\]\.,;:\s@\"]+)*)|(\".+\"))@(([^<>()[\]\.,;:\s@\"]+\.)+[^<>()[\]\.,;:\s@\"]{2,})$/i
+            /^(([^<>()[\].,;:\s@"]+(\.[^<>()[\].,;:\s@"]+)*)|(".+"))@(([^<>()[\].,;:\s@"]+\.)+[^<>()[\].,;:\s@"]{2,})$/i
           )
         ) {
           errorHandler('Not a valid Email');
@@ -87,7 +87,7 @@ const dataCellKeyPressHandler = (e) => {
       case 'url':
         if (
           !elementText.match(
-            /[(http(s)?):\/\/(www\.)?a-zA-Z0-9@:%._\+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_\+.~#?&//=]*)/gi
+            /[(http(s)?)://(www.)?a-zA-Z0-9@:%._+~#=]{2,256}\.[a-z]{2,6}\b([-a-zA-Z0-9@:%_+.~#?&//=]*)/gi
           )
         ) {
           errorHandler('Enter a valid web address');
