@@ -20,7 +20,7 @@ export function resetTable() {
     document.getElementById('page-btns-holder').remove();
 }
 
-const itemsPerPage = 3;
+const itemsPerPage = 5;
 
 export function buildPaginatedTable(tableElement, tableMap, pageNumber = 0) {
   pageNumber = parseInt(pageNumber);
@@ -48,6 +48,7 @@ function addPagesButtons(recordsLength) {
   const pagesCount = Math.ceil(recordsLength / itemsPerPage);
   let newPageButton = createPageButton('Previous');
   newPageButton.classList.add('previous');
+  // disablePagesNavBtn(newPageButton, true);
   const newPageButtonsHolder = createPageButtonsHolder();
 
   newPageButtonsHolder.append(newPageButton);
@@ -56,6 +57,8 @@ function addPagesButtons(recordsLength) {
     newPageButton = createPageButton(i + 1);
     newPageButtonsHolder.append(newPageButton);
   }
+
+  // newPageButtonsHolder.children[1].setAttribute('id', 'displayed-page');
 
   newPageButton = createPageButton('Next');
   newPageButtonsHolder.append(newPageButton);
@@ -156,4 +159,19 @@ export function toggleDeleteBtn(isBoxChecked) {
   }
 
   deleteBtn.disabled = !isBoxChecked;
+}
+
+export function disablePagesNavBtn(btn, shouldEnable) {
+  // if (shouldEnable) {
+  //   btn.disabled = shouldEnable;
+  //   btn.classList.toggle('page-btn');
+  //   return;
+  // }
+
+  btn.disabled = shouldEnable;
+  if (shouldEnable) {
+    btn.classList.remove('page-btn');
+    return;
+  }
+  btn.classList.add('page-btn');
 }

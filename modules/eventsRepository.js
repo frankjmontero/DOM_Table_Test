@@ -4,6 +4,7 @@ import {
   toggleColumnBtn,
   toggleDeleteBtn,
   buildPaginatedTable,
+  disablePagesNavBtn,
 } from './tableElementManipulation.js';
 import {
   addRow,
@@ -371,17 +372,19 @@ const newRowModal = document.getElementById('new-column-modal');
 const modalHeaderField = document.getElementById('header');
 const modalTypeList = document.getElementById('type');
 
-const onNewRowBtnClick = () => {
+const newRowBtnClickHandler = () => {
+  const page = document.getElementsByClassName('page-number-btn').length;
   toggleColumnBtn();
   addRow();
+  buildPaginatedTable(getElementTable(), getTableObject(), page);
 };
 
-const onNewColumnBtnClick = () => {
+const newColumnBtnClickHandler = () => {
   newRowModal.style.display = 'block';
   modalHeaderField.focus();
 };
 
-const onModalSubmitClick = () => {
+const modalSubmitClickHandler = () => {
   if (modalHeaderField.value.match(/^\s*$/)) {
     alert('Enter a proper header value');
     return;
@@ -391,11 +394,11 @@ const onModalSubmitClick = () => {
   newRowModal.style.display = 'none';
 };
 
-const onModalCloseClick = () => {
+const modalCloseClickHandler = () => {
   newRowModal.style.display = 'none';
 };
 
-const onDeleteBtnClick = () => {
+const deleteBtnClickHandler = () => {
   const allCheckboxes = document.querySelectorAll(dataCheckboxSelector);
 
   if (
@@ -413,7 +416,7 @@ const onDeleteBtnClick = () => {
   }
 };
 
-const onActionBtnClick = (e) => {
+const actionBtnClickHandler = (e) => {
   // const rowMenu = document.getElementsByClassName('menu-options');
   const optionsMenus = document.getElementsByClassName('menu-options');
   for (let i = 0; i < optionsMenus.length; i++) {
@@ -440,15 +443,22 @@ const pageNumberBtnClickHandler = (e) => {
     // console.log(pageBtn.textContent, e.target.textContent);
     if (pageBtn.textContent.includes(e.target.textContent)) {
       pageBtn.setAttribute('id', 'displayed-page');
+      if (pageBtn.previousElementSibling.textContent === 'Previous')
+        disablePagesNavBtn(pageBtn.previousElementSibling, true);
+      if (pageBtn.nextElementSibling.textContent === 'Next')
+        disablePagesNavBtn(pageBtn.nextElementSibling, true);
       break;
     }
   }
 };
 
 const nextBtnClickHandler = () => {
-  const currentPageBtn = document.querySelector('button[id= "displayed-page"]');
+  const currentPageBtn = document.querySelector('button[id= "displayed-page"]')
+    ? document.querySelector('button[id= "displayed-page"]')
+    : document.getElementById('page-btns-holder').firstElementChild
+        .nextElementSibling;
   const nextPageBtn = currentPageBtn.nextElementSibling;
-  console.log(currentPageBtn, nextPageBtn);
+  // console.log(currentPageBtn, nextPageBtn, nextPageBtn.nextSibling.textContent);
 
   buildPaginatedTable(
     getElementTable(),
@@ -462,22 +472,29 @@ const nextBtnClickHandler = () => {
     // console.log(pageBtn.textContent, e.target.textContent);
     if (pageBtn.textContent.includes(nextPageBtn.textContent)) {
       pageBtn.setAttribute('id', 'displayed-page');
+      if (pageBtn.nextElementSibling.textContent === 'Next')
+        disablePagesNavBtn(pageBtn.nextElementSibling, true);
       break;
     }
   }
+
+  disablePagesNavBtn(document.getElementsByClassName('previous')[0], false);
 };
 
-const prevBtnClickHandler = (e) => {
-  const currentPageBtn = document.querySelector('button[id= "displayed-page"]');
-  const prevPageBtnCaption = currentPageBtn.previousSibling.textContent;
+const prevBtnClickHandler = () => {
+  const currentPageBtn = document.querySelector('button[id= "displayed-page"]')
+    ? document.querySelector('button[id= "displayed-page"]')
+    : document.getElementById('page-btns-holder').lastElementChild;
+  const prevPageBtnCaption = currentPageBtn.previousElementSibling.textContent;
 
-  console.log(currentPageBtn, prevPageBtnCaption);
-
-  if (currentPageBtn.previousElementSibling === e.target) {
-    e.target.display = 'none';
-  }
+  // console.log(currentPageBtn, prevPageBtnCaption);
 
   buildPaginatedTable(getElementTable(), getTableObject(), prevPageBtnCaption);
+
+  // if (currentPageBtn.previousElementSibling.textContent === 'Previous') {
+  //   console.log('It ws true');
+  //   disablePagesNavBtn(currentPageBtn.previousElementSibling, false);
+  // }
 
   const pageNumberBtns = document.getElementsByClassName('page-number-btn');
 
@@ -485,18 +502,20 @@ const prevBtnClickHandler = (e) => {
     // console.log(pageBtn.textContent, e.target.textContent);
     if (pageBtn.textContent.includes(prevPageBtnCaption)) {
       pageBtn.setAttribute('id', 'displayed-page');
+      if (pageBtn.previousElementSibling.textContent === 'Previous')
+        disablePagesNavBtn(pageBtn.previousElementSibling, true);
       break;
     }
   }
 };
 
 function setBtnsEventListeners() {
-  setGlobalEventListener('click', '#new-row', onNewRowBtnClick);
-  setGlobalEventListener('click', '#new-column', onNewColumnBtnClick);
-  setGlobalEventListener('click', '#modal-submit-btn', onModalSubmitClick);
-  setGlobalEventListener('click', '#modal-close-btn', onModalCloseClick);
-  setGlobalEventListener('click', '#delete-btn', onDeleteBtnClick);
-  setGlobalEventListener('click', '.action-btn', onActionBtnClick);
+  setGlobalEventListener('click', '#new-row', newRowBtnClickHandler);
+  setGlobalEventListener('click', '#new-column', newColumnBtnClickHandler);
+  setGlobalEventListener('click', '#modal-submit-btn', modalSubmitClickHandler);
+  setGlobalEventListener('click', '#modal-close-btn', modalCloseClickHandler);
+  setGlobalEventListener('click', '#delete-btn', deleteBtnClickHandler);
+  setGlobalEventListener('click', '.action-btn', actionBtnClickHandler);
   setGlobalEventListener(
     'click',
     '.page-number-btn',
@@ -523,9 +542,16 @@ const onWindowClick = (e) => {
   }
 };
 
+// const pageLoadHandler = () => {
+//   const firstPage = document.getElementsByClassName('page-number-btn')[0];
+//   console.log('Just laoded');
+//   firstPage.setAttribute('id', 'displayed-page');
+// };
+
 function setOtherEventListeners() {
   setGlobalEventListener('input', '#search', onInput);
   window.addEventListener('click', onWindowClick);
+  // window.addEventListener('Loading', pageLoadHandler);
 }
 
 const onEditMenuClick = (e) => {
