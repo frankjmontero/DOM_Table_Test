@@ -1,0 +1,22 @@
+{
+  "name": "dom_table_test",
+  "version": "1.0.0",
+  "description": "A website that allows you to crate a fully functional, typed and editable table.",
+  "main": "script.js",
+  "scripts": {
+    "test": "echo \"Error: no test specified\" && exit 1"
+  },
+  "repository": {
+    "type": "git",
+    "url": "git+https://github.com/frankjmontero/DOM_Table_Test.git"
+  },
+  "author": "frankjmontero",
+  "license": "ISC",
+  "bugs": {
+    "url": "https://github.com/frankjmontero/DOM_Table_Test/issues"
+  },
+  "homepage": "https://github.com/frankjmontero/DOM_Table_Test#readme",
+  "devDependencies": {
+    "eslint": "^8.25.0"
+  }
+}

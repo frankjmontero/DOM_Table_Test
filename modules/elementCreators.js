@@ -11,7 +11,6 @@ const elements = {
   div: () => document.createElement('div'),
 }
 
-
 export function createTable() {
   const newTable = elements.table();
 
@@ -104,6 +103,25 @@ export function createActionButton(rowId) {
   // newActionBtn.style.height = '130%';
 
   return newActionBtn;
+}
+
+export function createPageButton(btnLabel) {
+  const newBtn = elements.button();
+
+  newBtn.setAttribute('class', 'page-btn');
+  
+  if (parseInt(btnLabel)) newBtn.setAttribute('class', 'page-number-btn');
+  newBtn.textContent = btnLabel;
+
+  return newBtn;
+}
+
+export function createPageButtonsHolder() {
+  const newPageButtonsHolder = elements.div();
+
+  newPageButtonsHolder.setAttribute('id', 'page-btns-holder');
+
+  return newPageButtonsHolder;
 }
 
 export function createActionMenu(rowId) {

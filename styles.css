@@ -9,7 +9,7 @@ table {
   background-color: white;
   color: black;
 }
-table, button {
+table, button:not(.page-btn) {
   margin: 5px 5px 5px 10px;
 }
 
@@ -110,4 +110,23 @@ a {
 }
 .action-btn:hover, .action-btn:focus {
   background-color: #2980B9;
+}
+
+.page-btn, .page-number-btn {
+  background-color: rgb(59, 57, 57);
+  color:rgba(237, 187, 187, 0.748);
+  border: none;
+  min-width: 2.5em;
+  height: 2.2em;
+}
+
+.page-number-btn:hover, .page-btn:hover {
+  background-color: rgb(75, 72, 72);
+  color: whitesmoke;
+}
+
+#displayed-page {
+  font-weight: bolder;
+  color: rgb(91, 129, 255);
+  font-size: 1em;
 }

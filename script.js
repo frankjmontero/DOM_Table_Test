@@ -1,7 +1,7 @@
-import { buildTable, toggleColumnBtn, getElementTable } from './modules/tableElementManipulation.js'
+import { createTable } from './modules/elementCreators.js';
 import { setAllEventListeners } from './modules/eventsRepository.js';
+import { buildPaginatedTable, getElementTable, toggleColumnBtn } from './modules/tableElementManipulation.js';
 import { getTableObject } from './modules/tableObjectManipulation.js';
-import { createTable } from './modules/elementCreators.js'
 import { setSortOrder } from './modules/utilityScript.js';
 
 window.onload = () => {
@@ -18,7 +18,8 @@ window.onload = () => {
   setSortOrder(true);
 
   if (getTableObject()) {
-    buildTable(getElementTable(), getTableObject());
+    // buildTable(getElementTable(), getTableObject());
+    buildPaginatedTable(getElementTable(), getTableObject());
     toggleColumnBtn();
   }
 
