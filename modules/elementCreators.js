@@ -1,4 +1,4 @@
-import { setDragAndDropEvents } from "./eventsRepository.js";
+import { setDragAndDropEvents } from './eventsRepository.js';
 
 const elements = {
   table: () => document.createElement('table'),
@@ -9,25 +9,24 @@ const elements = {
   button: () => document.createElement('button'),
   link: () => document.createElement('a'),
   div: () => document.createElement('div'),
-}
+};
 
 export function createTable() {
   const newTable = elements.table();
 
   newTable.setAttribute('id', 'dynamic-table');
-  
+
   return newTable;
 }
 
-export function createRow(id) {
-   const newRow = elements.row();
+export function createRow(id, elementClass = 'dataRow') {
+  const newRow = elements.row();
 
-   newRow.setAttribute('id', id);
-   setDragAndDropEvents(newRow);
-  //  console.log(newRow);
-  //  console.log(newRow.getRootNode());
+  newRow.setAttribute('id', id);
+  newRow.classList.add(elementClass);
+  setDragAndDropEvents(newRow);
 
-   return newRow;
+  return newRow;
 }
 
 export function createHeaderCell(id, text) {
@@ -42,22 +41,21 @@ export function createHeaderCell(id, text) {
 
 export function createNormalCell(id, dataType, text) {
   const newCell = elements.cell();
-  const type = (dataType) ? dataType : '';
+  const type = dataType ? dataType : '';
 
   newCell.setAttribute('class', `c${id}`);
   newCell.setAttribute('type', type);
   newCell.style.textAlign = 'left';
 
-
   switch (type) {
-    case 'number' :
+    case 'number':
       newCell.style.textAlign = 'right';
       newCell.textContent = text;
       break;
-    case 'text' :
+    case 'text':
       newCell.textContent = text;
       break;
-    case 'email' :
+    case 'email':
     case 'url':
       newCell.append(createLink(text, type));
       newCell.classList.add('link');
@@ -69,7 +67,7 @@ export function createNormalCell(id, dataType, text) {
 
 export function createEdgeCell(id) {
   const newCell = elements.cell();
-  
+
   newCell.setAttribute('class', `e${id}`);
 
   return newCell;
@@ -80,12 +78,10 @@ export function createCheckbox(id, index) {
 
   newCheckbox.setAttribute('id', `b${id}`);
   newCheckbox.setAttribute('type', 'checkbox');
-  newCheckbox.setAttribute('name', (index === 0) 
-    ? 
-      'all-rows-checker' 
-    :
-      'row-checker' 
-    );
+  newCheckbox.setAttribute(
+    'name',
+    index === 0 ? 'all-rows-checker' : 'row-checker'
+  );
 
   return newCheckbox;
 }
@@ -95,12 +91,9 @@ export function createActionButton(rowId) {
 
   newActionBtn.setAttribute('class', 'action-btn');
   newActionBtn.setAttribute('id', `btn${rowId}`);
-  
-  // newActionBtn.textContent = '\u2699';
 
   newActionBtn.setAttribute('type', 'image');
   newActionBtn.setAttribute('src', './sources/settings.png');
-  // newActionBtn.style.height = '130%';
 
   return newActionBtn;
 }
@@ -109,7 +102,7 @@ export function createPageButton(btnLabel) {
   const newBtn = elements.button();
 
   newBtn.setAttribute('class', 'page-btn');
-  
+
   if (parseInt(btnLabel)) newBtn.setAttribute('class', 'page-number-btn');
   newBtn.textContent = btnLabel;
 
@@ -148,8 +141,8 @@ export function createLink(text, type, url) {
   const newLink = elements.link();
 
   newLink.innerText = text;
-  
-  if(url) {
+
+  if (url) {
     let classAttribute = '';
     switch (text) {
       case 'Edit':
@@ -167,16 +160,12 @@ export function createLink(text, type, url) {
     }
     newLink.setAttribute('class', classAttribute);
     newLink.setAttribute('href', url);
-
   } else {
     newLink.setAttribute('target', '_blank');
-    newLink.setAttribute('href', text);  
+    newLink.setAttribute('href', text);
     newLink.setAttribute('type', type);
   }
-  // newLink.setAttribute('target', '_blank');
-  // newLink.setAttribute('href', (url) ? url: text);
-  // newLink.setAttribute('type', type);
-  
+
   if (type === 'email') {
     newLink.setAttribute('href', `mailto:${text}`);
   }

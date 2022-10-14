@@ -1,8 +1,3 @@
-import {
-  buildTable,
-  resetTable,
-  getElementTable,
-} from './tableElementManipulation.js';
 import { generateRandom } from './utilityScript.js';
 
 export function getTableObject() {
@@ -10,27 +5,16 @@ export function getTableObject() {
 }
 
 export function setTableObject(newTableObject) {
-  // console.log(JSON.stringify(newTableObject));
   localStorage.setItem('table', JSON.stringify(newTableObject));
-  // console.log(getTableObject());
-
-  resetTable();
-  buildTable(getElementTable(), getTableObject());
-  // buildPaginatedTable(getElementTable(), getTableObject());
 }
 
 export function addRow() {
   const tableMap = getTableObject() ? getTableObject() : { rows: [] };
-  // console.log(tableMap);
-  // if (!tableMap.rows) {
-  //   tableMap.rows = [];
-  // }
 
   setTableObject(tableMap);
 
   const rows = tableMap.rows;
   const rowMap = {
-    // id: rows.length,
     id: `r${getRandomNumber()}`,
     cells: [],
   };
@@ -64,14 +48,10 @@ export function addColumn(columnHeader, columnType) {
 export function updateCell(rowId, id, newContent) {
   const tableMap = getTableObject();
   const rowNumber = tableMap.rows.findIndex((row) => row.id == rowId);
-  // const cellNumber = id;
   const cellNumber = id[1];
-
-  // console.log(cellNumber);
 
   tableMap.rows[rowNumber].cells[cellNumber].text = newContent;
 
-  // setTableObject(tableMap);
   localStorage.setItem('table', JSON.stringify(tableMap));
 }
 
@@ -84,7 +64,6 @@ export function deleteRecord(recordNumber) {
   tableMap.rows.splice(parseInt(rowNumber), 1);
 
   setTableObject(tableMap);
-  // toggleDeleteBtn(false);
 }
 
 const getRandomNumber = () => {
@@ -100,11 +79,9 @@ const getRandomNumber = () => {
     randomNumber = generateRandom(idMaxLength);
     if (tableMap) {
       found = !!tableMap.rows.find((row) => {
-        // console.log(row.id, randomNumber, row.id == `r${randomNumber}`);
         return row.id == `r${randomNumber}`;
       });
     }
-    // console.log('found: ', found);
   }
   return randomNumber;
 };

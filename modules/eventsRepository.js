@@ -4,7 +4,7 @@ import {
   toggleColumnBtn,
   toggleDeleteBtn,
   buildPaginatedTable,
-  disablePagesNavBtn,
+  itemsPerPage,
 } from './tableElementManipulation.js';
 import {
   addRow,
@@ -16,11 +16,14 @@ import {
   getRowJson,
   getRowCsv,
 } from './tableObjectManipulation.js';
-import { getSortOrder, toggleSortOrder } from './utilityScript.js';
+import {
+  getCurrentPage,
+  getSortOrder,
+  toggleSortOrder,
+} from './utilityScript.js';
 
 function setGlobalEventListener(type, selector, func) {
   document.addEventListener(type, (e) => {
-    // if (type === 'mousedown') console.log(e.target, selector, e.target.matches(selector), func);
     if (e.target.matches(selector)) func(e);
   });
 }
@@ -30,26 +33,21 @@ const makeElementEditable = (element) => {
 };
 
 const dataCellDoubleClickHandler = (e) => {
-  // e.target.contentEditable = 'true';
   makeElementEditable(e.target);
 
   e.target.focus({ focusVisible: true });
 };
 
-const dataCellKeyPressHandler = (e) => {
+const dataCellsEnterKeyPressHandler = (e) => {
   if (e.key === 'Enter') {
     e.preventDefault();
 
     let elementText = e.target.textContent;
     const cellType = e.target.getAttribute('type');
     let cellColor = 'black';
-    // let elementId = e.target.className;
-    // let elementId = e.target.closest('[class]').cellIndex - 1;
     let elementId = e.target.closest('[class]').classList[0];
-    // const fatherId = e.target.parentNode.id;
     const fatherId = e.target.closest('tr').id;
 
-    // console.log(elementId, fatherId, fatherId2);
     console.log(elementId, fatherId);
 
     e.target.contentEditable = 'false';
@@ -82,8 +80,6 @@ const dataCellKeyPressHandler = (e) => {
           errorHandler('Not a valid Email');
           return;
         }
-        console.log('i am here');
-        // elementId = e.target.parentElement.getAttribute('id');
         break;
       case 'url':
         if (
@@ -94,10 +90,8 @@ const dataCellKeyPressHandler = (e) => {
           errorHandler('Enter a valid web address');
           return;
         }
-        // elementId = e.target.parentElement.getAttribute('id');
         break;
     }
-    // console.log(elementText, fatherId, elementId);
     updateCell(fatherId, elementId, elementText);
     e.target.style.borderColor = cellColor;
   }
@@ -113,18 +107,13 @@ const headerClickHandler = (e) => {
   const cellNumber = parseInt(e.target.getAttribute('id')[1]);
   const headerType = headerObject.cells[cellNumber].type;
 
-  // console.log(headerObject, headerType);
-  // console.log('canceled?', e.defaultPrevented);
-
   const sortNumbers = (a, b) => {
     let firstValue = parseInt(a.cells[cellNumber].text);
     let secondValue = parseInt(b.cells[cellNumber].text);
 
     if (getSortOrder() === 'true') {
-      // setSortOrder('false');
       return firstValue - secondValue;
     }
-    // setSortOrder('true');
     return secondValue - firstValue;
   };
 
@@ -133,12 +122,10 @@ const headerClickHandler = (e) => {
     let secondValue = b.cells[cellNumber].text.toLowerCase();
 
     if (getSortOrder() === 'true') {
-      // setSortOrder('false');
       if (firstValue < secondValue) return -1;
       if (firstValue > secondValue) return 1;
       return 0;
     }
-    // setSortOrder('true');
     if (firstValue < secondValue) return 1;
     if (firstValue > secondValue) return -1;
     return 0;
@@ -150,7 +137,7 @@ const headerClickHandler = (e) => {
 
   tableMap.rows.unshift(headerObject);
   setTableObject(tableMap);
-  // setDragAndDropEvents();
+  buildPaginatedTable(getElementTable(), getTableObject());
 };
 
 const dataCheckboxSelector = 'input[name="row-checker"]';
@@ -186,10 +173,8 @@ const firstCheckboxClickHandler = (e) => {
 
 const dataRowsCheckboxClickHandler = (e) => {
   const isElementChecked = e.target.checked;
-  // const fatherId = e.target.parentElement.getAttribute('id');
   const elementRow = e.target.closest('tr');
 
-  // console.log(elementRow);
   if (isElementChecked) {
     elementRow.classList.add('highlighted-row');
     toggleDeleteBtn(isElementChecked);
@@ -207,94 +192,6 @@ const dragRowMouseDownHandler = (e) => {
 const dragColumnMouseDownHandler = (e) => {
   if (e.ctrlKey) e.target.draggable = 'true';
 };
-// const keyOnRowsHandler = e => {
-//   if (e.ctrlKey) {
-//     const tableElementRows = document.querySelectorAll('tr');
-
-//     tableElementRows.forEach((row, i) => {
-//       if (i > 0) row.draggable = true;
-//     });
-
-//   }
-// };
-
-// const keyUpOnRowsHandler = e => {
-//   if (e.ctrlKey) {
-//     const tableElementRows = document.querySelectorAll('tr');
-
-//     tableElementRows.forEach((row, i) => {
-//       if (i > 0) row.draggable = false;
-//     });
-
-//   }
-// };
-
-const startingDragHandler = (e) => {
-  e.dataTransfer.setData('text/plain', e.target.id);
-  e.dataTransfer.effectAllowed = 'move';
-};
-
-// const enterDragHandler = e => {
-//   const draggingRowId = e.dataTransfer.getData('text/plain');
-//   const draggingRowCopy = document.getElementsById(draggingRowId).cloneNode(true);
-//   draggingRow.classList.add('temporary-dragged-row');
-//   e.target.insertAdjacentHTML('beforebegin', draggingRow);
-// };
-
-const overDragHandler = (e) => {
-  e.preventDefault();
-  e.dataTransfer.dropEffect = 'move';
-};
-
-const rowDropHandler = (e) => {
-  e.preventDefault();
-  const draggingRowId = e.dataTransfer.getData('text/plain');
-  const draggingRow = document.getElementById(draggingRowId);
-  const tableElement = getElementTable();
-
-  console.log(draggingRowId, draggingRow);
-
-  if (draggingRow.draggable) draggingRow.removeAttribute('draggable');
-  // e.target.closest('tr').insertAdjacentHTML('beforebegin', draggingRow.outerHTML);
-  // console.log(e.target.closest('tr'), tableElement);
-  tableElement.insertBefore(draggingRow, e.target.closest('tr'));
-};
-
-const columnDropHandler = (e) => {
-  e.preventDefault();
-  const draggingHeaderId = e.dataTransfer.getData('text/plain');
-  const draggingHeader = document.getElementById(draggingHeaderId);
-  // const columnNumber = parseInt(draggingHeaderId[1]) + 1;
-  // const targetColumn = parseInt(e.target.id[1]);
-  const columnNumber = draggingHeader.cellIndex;
-  const targetColumn = e.target.cellIndex;
-  // const targetRow = e.target.closest('tr');
-  const tableRows = document.querySelectorAll('tr');
-
-  // console.log(tableRows);
-  console.log(draggingHeader, columnNumber, targetColumn);
-
-  draggingHeader.removeAttribute('draggable');
-  tableRows.forEach((row) => {
-    const rowCells = row.children;
-    // console.log(rowCells, row);
-    console.log(rowCells[columnNumber], rowCells[targetColumn]);
-    row.insertBefore(rowCells[columnNumber], rowCells[targetColumn]);
-  });
-
-  // targetRow.insertBefore(draggingHeader, e.target);
-};
-
-// const finishDraggingHandler = e => {
-//   // console.log(e.target);
-//   // e.target.removeAttribute('draggable');
-//   if (e.dataTransfer.dropEffect !== 'none')  {
-//     // e.target.remove();
-//     // setAllEventListeners();
-//     // setCellsEventListeners();
-//     // setDragAndDropEvents();
-//   }
-// };
 
 /* TODO Make headers editable */
 function setCellsEventListeners() {
@@ -302,9 +199,7 @@ function setCellsEventListeners() {
   const headerSelector = 'th';
   const editableElementsSelector = `${headerSelector}, td:not(:first-child, :last-child, .link), ${anchorSelector}`;
   const headerCheckboxSelector = 'input[name="all-rows-checker"]';
-  // const tableElementRows = document.querySelectorAll('tr');
   const dataCellSelector = 'tr:not(:nth-of-type(1)) td';
-  // const tableElementsDataRowsSelector = 'tr:not(:nth-of-type(1))';
 
   setGlobalEventListener(
     'dblclick',
@@ -314,7 +209,7 @@ function setCellsEventListeners() {
   setGlobalEventListener(
     'keydown',
     editableElementsSelector,
-    dataCellKeyPressHandler
+    dataCellsEnterKeyPressHandler
   );
   setGlobalEventListener('click', anchorSelector, anchorClickHandler);
   setGlobalEventListener('click', headerSelector, headerClickHandler);
@@ -338,34 +233,60 @@ function setCellsEventListeners() {
     headerSelector,
     dragColumnMouseDownHandler
   );
-  // setDragAndDropEvents();
 }
 
+const startingDragHandler = (e) => {
+  e.dataTransfer.setData('text/plain', e.target.id);
+  e.dataTransfer.effectAllowed = 'move';
+};
+
+const overDragHandler = (e) => {
+  e.preventDefault();
+  e.dataTransfer.dropEffect = 'move';
+};
+
+const rowDropHandler = (e) => {
+  console.log('drag row');
+  e.preventDefault();
+  const draggingRowId = e.dataTransfer.getData('text/plain');
+  const draggingRow = document.getElementById(draggingRowId);
+  const tableElement = getElementTable();
+
+  console.log(draggingRowId, draggingRow);
+
+  if (draggingRow.draggable) draggingRow.removeAttribute('draggable');
+  tableElement.insertBefore(draggingRow, e.target.closest('tr'));
+};
+
+const columnDropHandler = (e) => {
+  console.log('drag column');
+  e.preventDefault();
+  const draggingHeaderId = e.dataTransfer.getData('text/plain');
+  const draggingHeader = document.getElementById(draggingHeaderId);
+  const originColumn = draggingHeader.cellIndex;
+  const targetColumn = e.target.cellIndex;
+  const tableRows = document.querySelectorAll('tr');
+
+  console.log(draggingHeader, originColumn, targetColumn);
+
+  draggingHeader.removeAttribute('draggable');
+  tableRows.forEach((row) => {
+    const rowCells = row.children;
+    // console.log(rowCells[originColumn], rowCells[targetColumn]);
+    row.insertBefore(rowCells[originColumn], rowCells[targetColumn]);
+  });
+};
+
 export function setDragAndDropEvents(element) {
-  // const tableElementRows = document.querySelectorAll('tr');
-
-  // tableElementRows.forEach((row, i) => {
-  //   if (i > 0) {
-  //     // row.addEventListener('mousedown', rowsMouseDownHandler);
-  //     row.addEventListener('dragstart', startingDragHandler);
-  //     // row.addEventListener('dragenter', enterDragHandler);
-  //     row.addEventListener('dragover', overDragHandler);
-  //     // row.addEventListener('dragleave', dragLeaveHandler);
-  //     row.addEventListener('drop', dropHandler);
-  //     row.addEventListener('dragend', finishDraggingHandler);
-  //   }
-  // });
-
   element.addEventListener('dragstart', startingDragHandler);
-  // element.addEventListener('dragenter', enterDragHandler);
   element.addEventListener('dragover', overDragHandler);
-  // element.addEventListener('dragleave', dragLeaveHandler);
-  // element.addEventListener('dragend', finishDraggingHandler);
-  if (element.nodeName.toLowerCase() === 'div') {
-    element.addEventListener('drop', rowDropHandler);
+  // if (element.nodeName.toLowerCase() === 'tr') {
+  if (element.id[0] === 'h') {
+    element.addEventListener('drop', columnDropHandler);
     return;
   }
-  element.addEventListener('drop', columnDropHandler);
+  if (!element.classList.contains('headerRow'))
+    element.addEventListener('drop', rowDropHandler);
 }
 
 const newRowModal = document.getElementById('new-column-modal');
@@ -373,10 +294,20 @@ const modalHeaderField = document.getElementById('header');
 const modalTypeList = document.getElementById('type');
 
 const newRowBtnClickHandler = () => {
-  const page = document.getElementsByClassName('page-number-btn').length;
+  // let page = document.getElementsByClassName('page-number-btn').length;
+
   toggleColumnBtn();
   addRow();
-  buildPaginatedTable(getElementTable(), getTableObject(), page);
+
+  const tableObject = getTableObject();
+  // console.log(page);
+
+  // page = tableObject.rows.length % 5 === 2 ? ++page : page;
+  const page =
+    tableObject.rows.length % itemsPerPage > 1
+      ? Math.ceil(tableObject.rows.length / itemsPerPage)
+      : Math.floor(tableObject.rows.length / itemsPerPage);
+  buildPaginatedTable(getElementTable(), tableObject, page);
 };
 
 const newColumnBtnClickHandler = () => {
@@ -392,6 +323,7 @@ const modalSubmitClickHandler = () => {
 
   addColumn(modalHeaderField.value, modalTypeList.value);
   newRowModal.style.display = 'none';
+  buildPaginatedTable(getElementTable(), getTableObject(), getCurrentPage());
 };
 
 const modalCloseClickHandler = () => {
@@ -412,12 +344,13 @@ const deleteBtnClickHandler = () => {
         deleteRecord(rowId);
       }
     });
+    buildPaginatedTable(getElementTable(), getTableObject());
+
     toggleDeleteBtn(false);
   }
 };
 
 const actionBtnClickHandler = (e) => {
-  // const rowMenu = document.getElementsByClassName('menu-options');
   const optionsMenus = document.getElementsByClassName('menu-options');
   for (let i = 0; i < optionsMenus.length; i++) {
     const openMenu = optionsMenus[i];
@@ -436,20 +369,6 @@ const pageNumberBtnClickHandler = (e) => {
     getTableObject(),
     e.target.textContent
   );
-
-  const pageNumberBtns = document.getElementsByClassName('page-number-btn');
-
-  for (const pageBtn of pageNumberBtns) {
-    // console.log(pageBtn.textContent, e.target.textContent);
-    if (pageBtn.textContent.includes(e.target.textContent)) {
-      pageBtn.setAttribute('id', 'displayed-page');
-      if (pageBtn.previousElementSibling.textContent === 'Previous')
-        disablePagesNavBtn(pageBtn.previousElementSibling, true);
-      if (pageBtn.nextElementSibling.textContent === 'Next')
-        disablePagesNavBtn(pageBtn.nextElementSibling, true);
-      break;
-    }
-  }
 };
 
 const nextBtnClickHandler = () => {
@@ -458,27 +377,12 @@ const nextBtnClickHandler = () => {
     : document.getElementById('page-btns-holder').firstElementChild
         .nextElementSibling;
   const nextPageBtn = currentPageBtn.nextElementSibling;
-  // console.log(currentPageBtn, nextPageBtn, nextPageBtn.nextSibling.textContent);
 
   buildPaginatedTable(
     getElementTable(),
     getTableObject(),
     nextPageBtn.textContent
   );
-
-  const pageNumberBtns = document.getElementsByClassName('page-number-btn');
-
-  for (const pageBtn of pageNumberBtns) {
-    // console.log(pageBtn.textContent, e.target.textContent);
-    if (pageBtn.textContent.includes(nextPageBtn.textContent)) {
-      pageBtn.setAttribute('id', 'displayed-page');
-      if (pageBtn.nextElementSibling.textContent === 'Next')
-        disablePagesNavBtn(pageBtn.nextElementSibling, true);
-      break;
-    }
-  }
-
-  disablePagesNavBtn(document.getElementsByClassName('previous')[0], false);
 };
 
 const prevBtnClickHandler = () => {
@@ -487,26 +391,7 @@ const prevBtnClickHandler = () => {
     : document.getElementById('page-btns-holder').lastElementChild;
   const prevPageBtnCaption = currentPageBtn.previousElementSibling.textContent;
 
-  // console.log(currentPageBtn, prevPageBtnCaption);
-
   buildPaginatedTable(getElementTable(), getTableObject(), prevPageBtnCaption);
-
-  // if (currentPageBtn.previousElementSibling.textContent === 'Previous') {
-  //   console.log('It ws true');
-  //   disablePagesNavBtn(currentPageBtn.previousElementSibling, false);
-  // }
-
-  const pageNumberBtns = document.getElementsByClassName('page-number-btn');
-
-  for (const pageBtn of pageNumberBtns) {
-    // console.log(pageBtn.textContent, e.target.textContent);
-    if (pageBtn.textContent.includes(prevPageBtnCaption)) {
-      pageBtn.setAttribute('id', 'displayed-page');
-      if (pageBtn.previousElementSibling.textContent === 'Previous')
-        disablePagesNavBtn(pageBtn.previousElementSibling, true);
-      break;
-    }
-  }
 };
 
 function setBtnsEventListeners() {
@@ -526,7 +411,7 @@ function setBtnsEventListeners() {
 }
 
 const onInput = (e) => {
-  tableSearch(e.target.value, getTableObject());
+  tableSearch(e.target.value);
 };
 
 const onWindowClick = (e) => {
@@ -542,22 +427,13 @@ const onWindowClick = (e) => {
   }
 };
 
-// const pageLoadHandler = () => {
-//   const firstPage = document.getElementsByClassName('page-number-btn')[0];
-//   console.log('Just laoded');
-//   firstPage.setAttribute('id', 'displayed-page');
-// };
-
 function setOtherEventListeners() {
   setGlobalEventListener('input', '#search', onInput);
   window.addEventListener('click', onWindowClick);
-  // window.addEventListener('Loading', pageLoadHandler);
 }
 
 const onEditMenuClick = (e) => {
-  // console.log('im in')
   const elementRowChildren = e.target.closest('tr').children;
-  // console.log(elementRowChildren);
 
   let i = 1;
   for (i = 1; i < elementRowChildren.length - 2; i++) {
@@ -574,6 +450,7 @@ const onDeleteMenuClick = (e) => {
   ) {
     const elementRowId = e.target.closest('tr').id;
     deleteRecord(elementRowId);
+    buildPaginatedTable(getElementTable(), getTableObject());
   }
 };
 
@@ -600,7 +477,6 @@ function setRowMenuEventListeners() {
   const copyCsvOptionSelector = 'a.copy-csv';
   const deleteOptionSelector = 'a.delete';
 
-  // console.log('inRowmenu')
   setGlobalEventListener('click', editOptionSelector, onEditMenuClick);
   setGlobalEventListener('click', deleteOptionSelector, onDeleteMenuClick);
   setGlobalEventListener('click', copyJsonOptionSelector, onCopyMenuClick);

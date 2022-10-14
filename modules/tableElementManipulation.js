@@ -8,6 +8,9 @@ import {
   createPageButton,
   createPageButtonsHolder,
 } from './elementCreators.js';
+import { getTableObject } from './tableObjectManipulation.js';
+
+export const itemsPerPage = 10;
 
 export function resetTable() {
   if (getElementTable()) {
@@ -20,19 +23,13 @@ export function resetTable() {
     document.getElementById('page-btns-holder').remove();
 }
 
-const itemsPerPage = 5;
-
-export function buildPaginatedTable(tableElement, tableMap, pageNumber = 0) {
+export function buildPaginatedTable(tableElement, tableMap, pageNumber = 1) {
   pageNumber = parseInt(pageNumber);
   const tableMapCopy = { rows: [] };
-  // const firstRecord = (pageNumber > 1) ? itemsPerPage * (pageNumber - 1) + 1 : 1;
   const firstRecord = pageNumber > 1 ? itemsPerPage * (pageNumber - 1) : 0;
   const lastRecord = firstRecord + itemsPerPage;
-  const recordsRowsLength = tableMap.rows.length;
+  const recordsRowsLength = tableMap.rows.length - 1;
 
-  // tableMapCopy.rows.push(tableMap.rows[0]);
-  // tableMapCopy.rows.push(...tableMap.rows.slice(firstRecord, lastRecord));
-  // tableMapCopy.rows = tableMap.rows.slice(firstRecord, lastRecord);
   tableMapCopy.rows.push(
     tableMap.rows.shift(),
     ...tableMap.rows.slice(firstRecord, lastRecord)
@@ -40,17 +37,24 @@ export function buildPaginatedTable(tableElement, tableMap, pageNumber = 0) {
 
   resetTable();
   buildTable(tableElement, tableMapCopy);
-  if (itemsPerPage < recordsRowsLength)
-    document.querySelector('body').append(addPagesButtons(recordsRowsLength));
+
+  if (itemsPerPage < recordsRowsLength) {
+    const pageNumberRow = createPagesButtons(recordsRowsLength, pageNumber);
+    document.querySelector('body').append(pageNumberRow);
+  }
 }
 
-function addPagesButtons(recordsLength) {
+function createPagesButtons(recordsLength, page) {
   const pagesCount = Math.ceil(recordsLength / itemsPerPage);
+  // console.log(recordsLength, itemsPerPage, pagesCount);
   let newPageButton = createPageButton('Previous');
   newPageButton.classList.add('previous');
-  // disablePagesNavBtn(newPageButton, true);
   const newPageButtonsHolder = createPageButtonsHolder();
 
+  if (page === 1) {
+    newPageButton.disabled = true;
+    newPageButton.classList.remove('page-btn');
+  }
   newPageButtonsHolder.append(newPageButton);
 
   for (let i = 0; i < pagesCount; i++) {
@@ -58,20 +62,20 @@ function addPagesButtons(recordsLength) {
     newPageButtonsHolder.append(newPageButton);
   }
 
-  // newPageButtonsHolder.children[1].setAttribute('id', 'displayed-page');
-
   newPageButton = createPageButton('Next');
+  if (page === newPageButtonsHolder.childNodes.length - 1) {
+    newPageButton.disabled = true;
+    newPageButton.classList.remove('page-btn');
+  }
   newPageButtonsHolder.append(newPageButton);
   newPageButton.classList.add('next');
 
-  // const pagesArea = document.getElementById('page-numbers-area');
+  newPageButtonsHolder.childNodes[page].setAttribute('id', 'displayed-page');
 
-  // pagesArea.append(newPageButtonsHolder);
   return newPageButtonsHolder;
-  // console.log(pagesCount);
 }
 
-export function buildTable(tableElement, tableMap) {
+function buildTable(tableElement, tableMap) {
   const rowsMap = tableMap.rows;
 
   rowsMap.forEach((row, index) => {
@@ -82,9 +86,9 @@ export function buildTable(tableElement, tableMap) {
 }
 
 export function buildRow(rowMap, index, headerCells) {
-  const newRow = createRow(rowMap.id);
+  const newRow =
+    index == 0 ? createRow(rowMap.id, 'headerRow') : createRow(rowMap.id);
   const cells = rowMap.cells;
-  // console.log(rowMap.id);
   const newCheckbox = createCheckbox(rowMap.id, index);
   const newActionMenu = createActionMenu(rowMap.id);
   let newCell = createEdgeCell(rowMap.id);
@@ -93,7 +97,6 @@ export function buildRow(rowMap, index, headerCells) {
   newRow.append(newCell);
 
   if (index == 0) {
-    // console.log(newRow);
     for (let i = 0; i < cells.length; i++) {
       newCell = createHeaderCell(i, cells[i].text);
       newRow.append(newCell);
@@ -113,29 +116,27 @@ export function buildRow(rowMap, index, headerCells) {
   return newRow;
 }
 
-export function tableSearch(searchString, tableMap) {
-  const tableElement = getElementTable();
-  resetTable();
+export function tableSearch(searchString) {
+  const tableMap = getTableObject();
+  // const tableElement = getElementTable();
+  // resetTable();
 
   if (searchString.match(/^\s*$/)) {
-    return buildTable(getElementTable(), tableMap);
+    return buildPaginatedTable(getElementTable(), tableMap);
   }
 
-  const rowsMap = tableMap.rows;
+  let rowsMap = tableMap.rows;
+  const headerRow = rowsMap.shift();
 
-  resetTable();
-  rowsMap.forEach((row, i) => {
-    if (i === 0) {
-      tableElement.append(buildRow(row, i, tableMap.rows[0].cells));
-      return;
-    }
-
-    let found;
-    found = row.cells.find((cell) =>
+  rowsMap = rowsMap.filter((row) => {
+    const found = row.cells.find((cell) =>
       cell.text.toLowerCase().includes(searchString.toLowerCase())
     );
-    if (found) tableElement.append(buildRow(row, i, tableMap.rows[0].cells));
+    return !!found;
   });
+
+  tableMap.rows = [headerRow, ...rowsMap];
+  buildPaginatedTable(getElementTable(), tableMap);
 }
 
 export function toggleColumnBtn() {
@@ -159,19 +160,4 @@ export function toggleDeleteBtn(isBoxChecked) {
   }
 
   deleteBtn.disabled = !isBoxChecked;
-}
-
-export function disablePagesNavBtn(btn, shouldEnable) {
-  // if (shouldEnable) {
-  //   btn.disabled = shouldEnable;
-  //   btn.classList.toggle('page-btn');
-  //   return;
-  // }
-
-  btn.disabled = shouldEnable;
-  if (shouldEnable) {
-    btn.classList.remove('page-btn');
-    return;
-  }
-  btn.classList.add('page-btn');
 }
